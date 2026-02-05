@@ -29,7 +29,7 @@ export default function Hero() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-            <Link href="/access">
+            <Link href="/practice">
               <Button size="lg" className="w-full sm:w-auto px-8">
                 Start Practicing
               </Button>

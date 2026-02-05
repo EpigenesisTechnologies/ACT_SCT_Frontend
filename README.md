@@ -2,21 +2,50 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+ 
+- npm
+
+### Installation
+
+1. Clone the repository and navigate to the project directory:
+```bash
+cd sct_act_frontend
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+### Run Locally
+
+#### Development Mode
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result. The page auto-updates as you edit the files.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+#### Production Mode (Windows)
+
+```bash
+npm run build
+npm run start
+```
+
+#### Production Mode (Linux/macOS)
+
+```bash
+npm run build
+npm start
+```
+
+The application will be available at [http://localhost:3000](http://localhost:3000).
+
+**Note:** You must run `npm run build` before starting the production server. The build creates the `.next` directory required for production.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 

@@ -11,7 +11,7 @@ export default function CTA() {
         <p className="text-lg opacity-90">Start your first 20-minute adaptive practice block today.</p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link href="/access">
+          <Link href="/practice">
             <Button size="lg" className="w-full sm:w-auto px-8 bg-accent text-accent-foreground hover:bg-accent/90">
               Start Practicing
             </Button>
