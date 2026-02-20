@@ -23,13 +23,23 @@ export interface ChatRequest {
 }
 
 export interface ChatResponse {
-  trace_id: string
-  message: {
+  raw: {
+    request_id: string
+    task: string
+    output: {
+      question?: any
+    }
+    trace: {
+      provider: string
+      model: string
+      latency_ms: number
+    }
+  }
+  trace_id?: string
+  message?: {
     role: "assistant"
     content: string
   }
-  provider: string
-  model: string
 }
 
 export class GatewayError extends Error {
@@ -59,6 +69,7 @@ export async function sendChatMessage(
   history: Message[] = []
 ): Promise<ChatResponse> {
   const baseUrl = process.env.NEXT_PUBLIC_AI_GATEWAY_URL
+  console.log("[AI Gateway] Base URL:", baseUrl)
   if (!baseUrl) {
     throw new Error(
       "NEXT_PUBLIC_AI_GATEWAY_URL env var not set. Gateway base URL required."
@@ -66,7 +77,7 @@ export async function sendChatMessage(
   }
 
   const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), 20000) // 20s timeout
+  const timeoutId = setTimeout(() => controller.abort(), 60000) // 60s timeout
 
   const messages: Message[] = [
     {
@@ -95,6 +106,9 @@ export async function sendChatMessage(
   }
 
   try {
+    console.log("[AI Gateway] Sending request to:", `${baseUrl}/v1/ai/chat`)
+    console.log("[AI Gateway] Request body:", JSON.stringify(request, null, 2))
+    
     const response = await fetch(`${baseUrl}/v1/ai/chat`, {
       method: "POST",
       headers: {
@@ -104,6 +118,7 @@ export async function sendChatMessage(
       signal: controller.signal,
     })
 
+    console.log("[AI Gateway] Response status:", response.status)
     clearTimeout(timeoutId)
 
     if (!response.ok) {
@@ -130,8 +145,28 @@ export async function sendChatMessage(
     }
 
     const data: ChatResponse = await response.json()
-    return data
+    console.log("[AI Gateway] Full response object:", data)
+    
+    // Map gateway response to expected format
+    const mappedResponse: ChatResponse = {
+      ...data,
+      trace_id: data.raw?.request_id,
+      message: {
+        role: "assistant",
+        content: JSON.stringify(data.raw?.output?.question || {})
+      }
+    }
+    
+    console.log("[AI Gateway] Mapped response:", mappedResponse)
+    
+    if (!mappedResponse.message?.content) {
+      console.error("[AI Gateway] Invalid response - no question data:", JSON.stringify(data, null, 2))
+      throw new GatewayError(0, mappedResponse.trace_id, "Invalid response structure from gateway")
+    }
+    
+    return mappedResponse
   } catch (error) {
+    console.error("[AI Gateway] Caught error:", error)
     clearTimeout(timeoutId)
 
     // Re-throw GatewayError
@@ -141,7 +176,7 @@ export async function sendChatMessage(
 
     // Handle abort (timeout)
     if (error instanceof Error && error.name === "AbortError") {
-      console.error("[AI Gateway Error] Request timeout (20s)")
+      console.error("[AI Gateway Error] Request timeout (60s)")
       throw new GatewayError(
         408,
         undefined,

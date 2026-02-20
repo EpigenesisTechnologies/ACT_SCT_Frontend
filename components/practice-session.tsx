@@ -99,14 +99,20 @@ export default function PracticeSession({ sessionId, section }: PracticeSessionP
     }
   }
 
-  const handleSessionEnd = async () => {
+  const handleSessionEnd = () => {
     // Store session ID for summary page
     localStorage.setItem("current_session_id", sessionId)
     router.push("/summary")
   }
 
+  useEffect(() => {
+    if (sessionComplete) {
+      handleSessionEnd()
+    }
+  }, [sessionComplete])
+
   if (sessionComplete) {
-    return handleSessionEnd()
+    return null
   }
 
   if (error && !question) {

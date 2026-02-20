@@ -32,6 +32,14 @@ export default function PracticeSectionPage() {
           `Start ACT practice. Give me the first question for ${section}.`,
           []
         )
+        console.log("[Practice Page] Full response received:", response)
+        console.log("[Practice Page] Message content:", response.message?.content)
+        console.log("[Practice Page] Response structure:", {
+          hasMessage: !!response.message,
+          hasContent: !!response.message?.content,
+          contentType: typeof response.message?.content,
+          contentLength: response.message?.content?.length
+        })
         setMessages([
           {
             role: "assistant",
@@ -60,6 +68,8 @@ export default function PracticeSectionPage() {
 
   // Scroll to bottom when messages change
   useEffect(() => {
+    console.log("[Practice Page] Messages updated:", messages)
+    console.log("[Practice Page] Messages length:", messages.length)
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
 
@@ -116,6 +126,13 @@ export default function PracticeSectionPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/50 flex flex-col p-4 py-8">
+      {console.log("[Practice Page] Render state:", { 
+        loading, 
+        error, 
+        messagesCount: messages.length,
+        hasError: !!error,
+        showingError: error && messages.length === 0
+      })}
       <div className="w-full max-w-3xl mx-auto flex flex-col h-screen gap-4">
         {/* Header */}
         <div className="border-b border-border pb-4">
